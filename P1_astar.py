@@ -39,15 +39,11 @@ class AStar(object):
         Hint: self.occupancy is a DetOccupancyGrid2D object, take a look at its methods for what might be
               useful here
         """
-        ########## Code starts here ##########
         if not (self.statespace_lo[0] >= x[0] and self.statespace_hi[0] <= x[1]):
             return False
         if not self.isfree(self, x):
             return False
         return True
-        # THIS IS A TEST TO SEE IF THIS WORKS
-        # raise NotImplementedError("is_free not implemented")
-        ########## Code ends here ##########
 
     def distance(self, x1, x2):
         """
@@ -61,11 +57,7 @@ class AStar(object):
         HINT: This should take one line. Tuples can be converted to numpy arrays using np.array().
         """
         ########## Code starts here ##########
-<<<<<<< HEAD
         return (np.array(x1) - np.array(x2))
-=======
-	return (np.array(x1) - np.array(x2))
->>>>>>> d8ca9af (HW1 Initial Commit)
         # raise NotImplementedError("distance not implemented")
         ########## Code ends here ##########
 
