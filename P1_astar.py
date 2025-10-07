@@ -46,7 +46,6 @@ class AStar(object):
             return False
         return True
         # THIS IS A TEST TO SEE IF THIS WORKS
-        # PLEASE
         # raise NotImplementedError("is_free not implemented")
         ########## Code ends here ##########
 
@@ -62,7 +61,11 @@ class AStar(object):
         HINT: This should take one line. Tuples can be converted to numpy arrays using np.array().
         """
         ########## Code starts here ##########
+<<<<<<< HEAD
         return (np.array(x1) - np.array(x2))
+=======
+	return (np.array(x1) - np.array(x2))
+>>>>>>> d8ca9af (HW1 Initial Commit)
         # raise NotImplementedError("distance not implemented")
         ########## Code ends here ##########
 
