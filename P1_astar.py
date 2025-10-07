@@ -45,6 +45,7 @@ class AStar(object):
             return False
         return True
         # TESTING TO PUSH / PULL
+        # NEW TEST 1:32PM
 
     def distance(self, x1, x2):
         """
