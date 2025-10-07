@@ -44,6 +44,7 @@ class AStar(object):
         if not self.isfree(self, x):
             return False
         return True
+        # TESTING TO PUSH / PULL
 
     def distance(self, x1, x2):
         """
