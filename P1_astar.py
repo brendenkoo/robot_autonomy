@@ -39,13 +39,12 @@ class AStar(object):
         Hint: self.occupancy is a DetOccupancyGrid2D object, take a look at its methods for what might be
               useful here
         """
-        if not (self.statespace_lo[0] >= x[0] and self.statespace_hi[0] <= x[1]):
+        if not (self.statespace_lo[0] <= x[0] <= self.statespace_hi[0] and 
+                self.statespace_hi[1] <= x[1] <= self.statespace_hi[1]):
             return False
-        if not self.isfree(self, x):
+        if not self.occupancy.isfree(self, x):
             return False
         return True
-        # TESTING TO PUSH / PULL
-        # NEW TEST 1:32PM
 
     def distance(self, x1, x2):
         """
@@ -58,10 +57,7 @@ class AStar(object):
 
         HINT: This should take one line. Tuples can be converted to numpy arrays using np.array().
         """
-        ########## Code starts here ##########
-        return (np.array(x1) - np.array(x2))
-        # raise NotImplementedError("distance not implemented")
-        ########## Code ends here ##########
+        return (np.sqrt(np.sum((np.array(x1) - np.array(x2))**2)))
 
     def snap_to_grid(self, x):
         """ Returns the closest point on a discrete state grid
@@ -95,9 +91,9 @@ class AStar(object):
                is computed.
         """
         neighbors = []
-        ########## Code starts here ##########
-        raise NotImplementedError("get_neighbors not implemented")
-        ########## Code ends here ##########
+        grid_self = snap_to_grid(self, x)
+        for i in range(8):
+            neighbor = 
         return neighbors
 
     def find_best_est_cost_through(self):
