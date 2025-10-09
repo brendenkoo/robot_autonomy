@@ -25,6 +25,14 @@ class RRT(object):
         Output:
             Boolean True/False
         """
+        # if not self.is_free(x1) or not self.is_free(x2):
+        #     return False
+        # motion = np.array([x1, x2])
+        # for line in obstacles:
+        #     if line_line_intersection(motion, line):
+        #         return False
+        # return True
+
         raise NotImplementedError("is_free_motion must be overriden by a subclass of RRT")
 
     def find_nearest(self, V, x):
@@ -105,14 +113,41 @@ class RRT(object):
         #     are meaningful! keep this in mind when using the helper functions!
         #   - the order in which you pass in arguments to steer_towards and is_free_motion is important
 
-        ########## Code starts here ##########
+        for it in range(max_iters):
+            if np.random.rand() < goal_bias:
+                x_rand = self.x_goal
+            else:
+                x_rand = np.random.uniform(self.statespace_lo, self.statespace_hi)
 
-        ########## Code ends here ##########
+            nearest_index = self.find_nearest(V[:n], x_rand)
+            x_nearest = V[nearest_index]
+            x_new = self.steer_towards(x_nearest, x_rand, eps)
+
+            if self.is_free_motion(self.obstacles, x_nearest, x_new):
+                V[n] = x_new
+                P[n] = nearest_index
+                n += 1
+
+                if np.linalg.norm(x_new - self.x_goal) < eps:
+                    if self.is_free_motion(self.obstacles, x_new, self.x_goal):
+                        V[n] = self.x_goal
+                        P[n] = n - 1
+                        n += 1
+                        success = True
+                        break
 
         plt.figure()
         self.plot_problem()
         self.plot_tree(V, P, color="blue", linewidth=.5, label="RRT tree", alpha=0.5)
         if success:
+            # Reconstruct the path from x_goal to x_init using the parent array P
+            self.path = []
+            current = n - 1  # Start from the last added node (x_goal)
+            while current != -1:
+                self.path.append(V[current])
+                current = P[current]
+            self.path.reverse()  # Reverse the path to go from x_init to x_goal
+
             if shortcut:
                 self.plot_path(color="purple", linewidth=2, label="Original solution path")
                 self.shortcut_path()
@@ -143,9 +178,20 @@ class RRT(object):
         Output:
             None, but should modify self.path
         """
-        ########## Code starts here ##########
+        if self.path is None or len(self.path) < 3:
+            return  # No path to shortcut or path too short to shortcut
 
-        ########## Code ends here ##########
+        i = 0
+        while i < len(self.path) - 2:
+            j = i + 2
+            while j < len(self.path):
+                if self.is_free_motion(self.obstacles, self.path[i], self.path[j]):
+                    # If the path between i and j is free, remove intermediate nodes
+                    self.path = self.path[:i+1] + self.path[j:]
+                    j = i + 2  # Reset j after modifying the path
+                else:
+                    j += 1
+            i += 1 
 
 class GeometricRRT(RRT):
     """
@@ -159,7 +205,28 @@ class GeometricRRT(RRT):
         # Hint: This should take 1-3 line.
 
         ########## Code ends here ##########
-        pass
+        """
+        Given a list of states V and a query state x, returns the index (row)
+        of V such that the steering distance (subject to robot dynamics) from
+        V[i] to x is minimized
+
+        Inputs:
+            V: list/np.array of states ("samples")
+            x - query state
+        Output:
+            Integer index of nearest point in V to x
+        """
+        # currentIndex = 0 #index of the closest state
+        # currentDista = float('inf') #distance to the closest state
+        # for index in V:
+            
+        #     if (state, x) < currentDista:
+        #         currentDista = distance(state, x)
+        #         currentIndex = index
+    
+        # return currentIndex
+        distances = np.linalg.norm(V - x, axis=1)
+        return np.argmin(distances)
 
     def steer_towards(self, x1, x2, eps):
         # Consult function specification in parent (RRT) class.
@@ -167,7 +234,23 @@ class GeometricRRT(RRT):
         # Hint: This should take 1-4 line.
 
         ########## Code ends here ##########
-        pass
+        """
+        Steers from x1 towards x2 along the shortest path (subject to robot
+        dynamics). Returns x2 if the length of this shortest path is less than
+        eps, otherwise returns the point at distance eps along the path from
+        x1 to x2.
+
+        Inputs:
+            x1: start state
+            x2: target state
+            eps: maximum steering distance
+        Output:
+            State (numpy vector) resulting from bounded steering
+        """
+        if np.linalg.norm(x2 - x1) <= eps:
+            return x2
+        else:
+            return x1 + eps * (x2 - x1) / np.linalg.norm(x2 - x1)
 
     def is_free_motion(self, obstacles, x1, x2):
         motion = np.array([x1, x2])
